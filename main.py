@@ -4,6 +4,7 @@ import pygame
 from pygame.locals import *
 
 from classes import boardSprite
+from classes import pongSprite
 
 class Main:
 
@@ -17,8 +18,10 @@ class Main:
 
         self.board = boardSprite.boardSprite()
 
+        self.player1 = pongSprite.pongSprite()
+
         self.spriteGroup = pygame.sprite.Group()
-        self.spriteGroup.add(self.board)
+        self.spriteGroup.add(self.board, self.player1)
 
     def check_events(self):
         for event in pygame.event.get():
@@ -29,6 +32,7 @@ class Main:
         self.running = True
         while(self.running):
             self.check_events()
+            self.clock.tick(120)
 
             self.screen.blit(self.bg, (0, 0))
 
