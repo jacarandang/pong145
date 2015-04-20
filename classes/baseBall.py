@@ -25,17 +25,18 @@ class baseBall:
         self.dy = random.choice([3, -3])
 
     def update(self):
+        self.onPong()
+        if self.onTopBot():
+            self.dy = -self.dy
+
         delta = time.time() - self.dt
         delta *= 100
         self.x += self.dx*delta
         self.y += self.dy*delta
         self.dt = time.time()
 
-        if self.onTopBot():
-            self.dy = -self.dy
         # if self.onLeftRight():
         #     self.dx = -self.dx
-        self.onPong()
 
     def onTopBot(self):
         return self.y + self.r >= 600 or self.y - self.r < 0
