@@ -6,6 +6,7 @@ from pygame.locals import *
 from classes.board import boardSprite
 from classes.pong import pongSprite
 from classes.ball import ballSprite
+from classes.stuff import boosterSprite
 
 class Main:
 
@@ -26,6 +27,9 @@ class Main:
         self.ball.setLeftPong(self.player1)
         self.ball.setRightPong(self.player2)
 
+        self.booster = boosterSprite.boosterSprite(0.1, 0, 400, 300)
+        self.booster.setBall(self.ball)
+
         self.spriteGroup = pygame.sprite.Group()
         self.spriteGroup.add(self.player1)
         self.spriteGroup.add(self.player2)
@@ -33,6 +37,9 @@ class Main:
 
         self.stageGroup = pygame.sprite.Group()
         self.stageGroup.add(self.board)
+
+        self.stuffGroup = pygame.sprite.Group()
+        self.stuffGroup.add(self.booster)
 
     def check_events(self):
         for event in pygame.event.get():
@@ -63,8 +70,11 @@ class Main:
             self.screen.blit(self.bg, (0, 0))
 
             self.stageGroup.update()
+            self.stuffGroup.update()
             self.spriteGroup.update()
+
             self.stageGroup.draw(self.screen)
+            self.stuffGroup.draw(self.screen)
             self.spriteGroup.draw(self.screen)
 
             if self.ball.outOfBounds():

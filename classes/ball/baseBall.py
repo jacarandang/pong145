@@ -26,8 +26,7 @@ class baseBall:
 
     def update(self):
         self.onPong()
-        if self.onTopBot():
-            self.dy = -self.dy
+        self.onTopBot()
 
         delta = time.time() - self.dt
         delta *= 100
@@ -38,7 +37,12 @@ class baseBall:
         self.outOfBounds()
 
     def onTopBot(self):
-        return self.y + self.r >= 600 or self.y - self.r < 0
+        if self.y + self.r >= 600:
+            self.y = 600 - self.r - 1
+            self.dy = -self.dy
+        elif self.y - self.r < 0:
+            self.y = self.r
+            self.dy = -self.dy
 
     def outOfBounds(self):
         if self.x < 0 or self.x > 800:
@@ -49,9 +53,10 @@ class baseBall:
         if self.leftPong is None or self.rightPong is None:
             pass
         else:
+            #move ball to prevent repeated change
             if self.dx < 0:
-                if self.y < self.leftPong.y + self.leftPong.h/2 and self.y > self.leftPong.y - self.leftPong.h/2 and self.x < self.leftPong.x + self.leftPong.w/2 and self.x > self.leftPong.x - self.leftPong.w/2:
+                if self.y - self.r < self.leftPong.y + self.leftPong.h/2 and self.y + self.r > self.leftPong.y - self.leftPong.h/2 and self.x - self.r < self.leftPong.x + self.leftPong.w/2 and self.x + self.r > self.leftPong.x - self.leftPong.w/2:
                     self.dx = -self.dx
             else:
-                if self.y < self.rightPong.y + self.rightPong.h/2 and self.y > self.rightPong.y - self.rightPong.h/2 and self.x < self.rightPong.x + self.rightPong.w/2 and self.x > self.rightPong.x - self.rightPong.w/2:
+                if self.y - self.r < self.rightPong.y + self.rightPong.h/2 and self.y + self.r > self.rightPong.y - self.rightPong.h/2 and self.x - self.r < self.rightPong.x + self.rightPong.w/2 and self.x + self.r > self.rightPong.x - self.rightPong.w/2:
                     self.dx = -self.dx
