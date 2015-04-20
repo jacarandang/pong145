@@ -35,14 +35,15 @@ class baseBall:
         self.y += self.dy*delta
         self.dt = time.time()
 
-        # if self.onLeftRight():
-        #     self.dx = -self.dx
+        self.outOfBounds()
 
     def onTopBot(self):
         return self.y + self.r >= 600 or self.y - self.r < 0
 
-    def onLeftRight(self):
-        return self.x + self.r >= 800 or self.x - self.r < 0
+    def outOfBounds(self):
+        if self.x < 0 or self.x > 800:
+            self.out = True
+            return True
 
     def onPong(self):
         if self.leftPong is None or self.rightPong is None:

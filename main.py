@@ -25,10 +25,14 @@ class Main:
         self.ball = ballSprite.ballSprite(400, 300)
         self.ball.setLeftPong(self.player1)
         self.ball.setRightPong(self.player2)
+
         self.spriteGroup = pygame.sprite.Group()
         self.spriteGroup.add(self.player1)
         self.spriteGroup.add(self.player2)
         self.spriteGroup.add(self.ball)
+
+        self.stageGroup = pygame.sprite.Group()
+        self.stageGroup.add(self.board)
 
     def check_events(self):
         for event in pygame.event.get():
@@ -39,14 +43,14 @@ class Main:
                     self.player1.startMovingUp()
                 elif event.key == K_DOWN:
                     self.player1.startMovingDown()
-                if event.key == K_q:
+                if event.key == K_a:
                     self.player2.startMovingUp()
-                elif event.key == K_a:
+                elif event.key == K_z:
                     self.player2.startMovingDown()
             elif event.type == KEYUP:
                 if event.key in [K_UP, K_DOWN]:
                     self.player1.stopMoving()
-                if event.key in [K_q, K_a]:
+                if event.key in [K_a, K_z]:
                     self.player2.stopMoving()
 
     def start(self):
@@ -58,8 +62,13 @@ class Main:
 
             self.screen.blit(self.bg, (0, 0))
 
+            self.stageGroup.update()
             self.spriteGroup.update()
+            self.stageGroup.draw(self.screen)
             self.spriteGroup.draw(self.screen)
+
+            if self.ball.outOfBounds():
+                break
 
             pygame.display.flip()
 
