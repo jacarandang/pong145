@@ -3,9 +3,9 @@ import os, sys, time
 import pygame
 from pygame.locals import *
 
-from classes import boardSprite
-from classes import pongSprite
-from classes import ballSprite
+from classes.board import boardSprite
+from classes.pong import pongSprite
+from classes.ball import ballSprite
 
 class Main:
 

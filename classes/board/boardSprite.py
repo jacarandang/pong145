@@ -2,7 +2,7 @@ import pygame
 from pygame.locals import *
 
 from baseBoard import baseBoard
-from utilities import loadImage
+from classes import utilities
 
 class boardSprite(baseBoard, pygame.sprite.Sprite):
 
@@ -10,7 +10,7 @@ class boardSprite(baseBoard, pygame.sprite.Sprite):
         pygame.sprite.Sprite.__init__(self)
         baseBoard.__init__(self)
 
-        self.image = loadImage("stage.jpg", -1)
+        self.image = utilities.loadImage("stage.jpg", -1)
         self.rect = self.image.get_rect()
         self.rect.topleft = 0, 0
 
