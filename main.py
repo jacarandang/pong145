@@ -19,12 +19,15 @@ class Main:
 
         self.board = boardSprite.boardSprite()
 
-        self.player1 = pongSprite.pongSprite((10, 400))
+        self.player1 = pongSprite.pongSprite((10, 300))
+        self.player2 = pongSprite.pongSprite((790, 300))
 
         self.ball = ballSprite.ballSprite(400, 300)
-
+        self.ball.setLeftPong(self.player1)
+        self.ball.setRightPong(self.player2)
         self.spriteGroup = pygame.sprite.Group()
         self.spriteGroup.add(self.player1)
+        self.spriteGroup.add(self.player2)
         self.spriteGroup.add(self.ball)
 
     def check_events(self):
@@ -36,9 +39,15 @@ class Main:
                     self.player1.startMovingUp()
                 elif event.key == K_DOWN:
                     self.player1.startMovingDown()
+                if event.key == K_q:
+                    self.player2.startMovingUp()
+                elif event.key == K_a:
+                    self.player2.startMovingDown()
             elif event.type == KEYUP:
                 if event.key in [K_UP, K_DOWN]:
                     self.player1.stopMoving()
+                if event.key in [K_q, K_a]:
+                    self.player2.stopMoving()
 
     def start(self):
         self.running = True

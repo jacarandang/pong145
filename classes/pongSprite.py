@@ -11,7 +11,7 @@ class pongSprite(basePong, pygame.sprite.Sprite):
         self.rect = pygame.Rect(self.x-self.w/2.00, self.y-self.h/2.00, self.w, self.h)
         self.image = pygame.Surface((self.rect.w, self.rect.h))
         self.image.fill((255, 255, 255))
-
+        
     def update(self):
         basePong.update(self)
         self.rect.center = self.x, self.y
