@@ -5,9 +5,9 @@ from baseBall import baseBall
 
 class ballSprite(baseBall, pygame.sprite.Sprite):
 
-    def __init__(self, x = 400, y = 300):
+    def __init__(self, x = 400, y = 300, dx = 0, dy = 0):
         pygame.sprite.Sprite.__init__(self)
-        baseBall.__init__(self, x, y)
+        baseBall.__init__(self, x, y, dx, dy)
         self.rect = pygame.Rect(self.x + self.r, self.y + self.r, self.r * 2, self.r * 2)
         self.image = pygame.Surface((self.rect.width, self.rect.height)).convert()
         self.image.fill((0, 0, 0))

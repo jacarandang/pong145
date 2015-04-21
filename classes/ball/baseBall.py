@@ -3,11 +3,11 @@ import random, time
 
 class baseBall:
 
-    def __init__(self, x = 400, y = 300):
+    def __init__(self, x = 400, y = 300, dx = 0, dy = 0):
         self.x = x
         self.y = y
-        self.dx = 0
-        self.dy = 0
+        self.dx = dx
+        self.dy = dy
         self.r = 8
         self.dt = time.time()
         self.leftPong = None

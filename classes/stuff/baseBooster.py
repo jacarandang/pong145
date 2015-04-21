@@ -1,3 +1,5 @@
+import time
+
 from baseStuff import baseStuff
 
 class baseBooster(baseStuff):
@@ -6,12 +8,14 @@ class baseBooster(baseStuff):
         self.dx = dx
         self.dy = dy
         baseStuff.__init__(self, x, y, 150, 50)
-        self.ball = None
-
-    def setBall(self, ball):
-        self.ball = ball
+        self.timer = time.time()
 
     def update(self):
-        if self.ballInRange():
-            self.ball.dx += self.dx
-            self.ball.dx += self.dy
+        dt = time.time() - self.timer
+        dt *= 100
+        baseStuff.checkInRange(self)
+        for ball in self.balls:
+            if self.inRange[ball]:
+                ball.dx += self.dx*dt
+                ball.dy += self.dy*dt
+        self.timer = time.time()

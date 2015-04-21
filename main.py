@@ -6,7 +6,7 @@ from pygame.locals import *
 from classes.board import boardSprite
 from classes.pong import pongSprite
 from classes.ball import ballSprite
-from classes.stuff import boosterSprite
+from classes.stuff import splitterSprite
 
 class Main:
 
@@ -27,8 +27,8 @@ class Main:
         self.ball.setLeftPong(self.player1)
         self.ball.setRightPong(self.player2)
 
-        self.booster = boosterSprite.boosterSprite(0.1, 0, 400, 300)
-        self.booster.setBall(self.ball)
+        self.splitter = splitterSprite.splitterSprite(400, 300, self)
+        self.splitter.addBall(self.ball)
 
         self.spriteGroup = pygame.sprite.Group()
         self.spriteGroup.add(self.player1)
@@ -39,7 +39,13 @@ class Main:
         self.stageGroup.add(self.board)
 
         self.stuffGroup = pygame.sprite.Group()
-        self.stuffGroup.add(self.booster)
+        self.stuffGroup.add(self.splitter)
+
+    def addBall(self, x, y, dx, dy):
+        ball = ballSprite.ballSprite(x, y, dx, dy)
+        ball.setLeftPong(self.player1)
+        ball.setRightPong(self.player2)
+        self.spriteGroup.add(ball)
 
     def check_events(self):
         for event in pygame.event.get():

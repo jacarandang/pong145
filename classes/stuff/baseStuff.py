@@ -7,15 +7,21 @@ class baseStuff:
         self.y = y
         self.w = w
         self.h = h
-        self.ball = None
+        self.balls = []
+        self.inRange = {}
 
-    def setBall(self, ball):
-        self.ball = ball
+    def addBall(self, ball):
+        self.balls.append(ball)
+        self.inRange[ball] = False
 
-    def ballInRange(self):
-        if self.ball is None:
-            return False
-        else:
-            if self.ball.x - self.ball.r < self.x + self.w/2 and self.ball.x + self.ball.r > self.x - self.w/2 and self.ball.y - self.ball.r < self.y + self.h/2 and self.ball.y + self.ball.r > self.y - self.w/2:
-                return True
-            return False
+    def removeBall(self, ball):
+        self.balls.remove(ball)
+        self.time.pop(ball)
+        self.inRange(ball)
+
+    def checkInRange(self):
+        for ball in self.balls:
+            if ball.x - ball.r < self.x + self.w/2 and ball.x + ball.r > self.x - self.w/2 and ball.y - ball.r < self.y + self.h/2 and ball.y + ball.r > self.y - self.w/2:
+                self.inRange[ball] = True
+            else:
+                self.inRange[ball] = False
