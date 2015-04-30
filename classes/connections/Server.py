@@ -1,5 +1,5 @@
 import socket
-import select
+import threading
 
 class Server:
 
@@ -20,7 +20,7 @@ class Server:
 		print("Waiting for a connection..")
 		client, address = ssocket.accept()
 		print("new connection from " + str(address))
-		client.send(str.encode("Shems Co!"))
+		#client.send(str.encode("Shems Co!"))
 		break
 	
 
