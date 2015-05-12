@@ -39,7 +39,7 @@ class Main:
         self.stageGroup.add(self.board)
 
         self.stuffGroup = pygame.sprite.Group()
-        self.stuffGroup.add(self.splitter)
+        self.stuffGroup.add()
 
     def addBall(self, x, y, dx, dy):
         ball = ballSprite.ballSprite(x, y, dx, dy)
