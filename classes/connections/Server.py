@@ -38,7 +38,11 @@ def server():
 					data = s.recv(1024)
 					if data:
 						data = bytes.decode(data)
-						sendToAll(ssocket, s, data)
+						print(data)
+						if "quit" in data:
+							s.send(str.encode("quit"))
+						else:
+							sendToAll(ssocket, s, data)
 					else: 
 						if s in sockets:
 							sockets.remove(s)

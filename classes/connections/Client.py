@@ -20,12 +20,18 @@ class Client:
 				message = sys.stdin.readline()
 				sock.send(str.encode(message))
 				#sock.sendto(data, target)
+				if "quit" in message:
+					break
 
 		def recv_msg(sock):
 			while 1:
 				data = sock.recv(1024)
 				data = bytes.decode(data)
-				print(data)
+				if "quit" in data:
+					print("bye")
+					break
+				else :
+					print(data)
 
 		threading.Thread(target=send_msg, args=(csocket,)).start()  
 		threading.Thread(target=recv_msg, args=(csocket,)).start()
