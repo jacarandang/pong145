@@ -1,5 +1,6 @@
 from classes.ball import baseBall
 from classes.pong import basePong
+from classes.connections import *
 
 class ServerGame:
 
