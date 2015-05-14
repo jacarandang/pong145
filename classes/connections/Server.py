@@ -30,17 +30,19 @@ def server():
 			if s == ssocket:
 				client, address = ssocket.accept()
 				sockets.append(client)
-				print(str(client) + " connected!")
+				print "Client (%s, %s) connected" % address
+				#print(str(client) + " connected!")
 				sendToAll(ssocket, client, "[%s:%s] joined\n" % address)
 			# new message
 			else:
 				try:
 					data = s.recv(1024)
 					if data:
-						data = bytes.decode(data)
+						#data = bytes.decode(data)
 						print(data)
 						if "quit" in data:
-							s.send(str.encode("quit"))
+							#s.send(str.encode("quit"))
+							s.send("quit")
 						else:
 							sendToAll(ssocket, s, data)
 					else: 
@@ -56,7 +58,8 @@ def sendToAll(ssocket, sock, message):
 	for s in sockets:
 		if (s!=ssocket):
 			try:
-				s.send(str.encode(message))
+				#s.send(str.encode(message))
+				s.send(message)
 			except:
 				s.close()
 				if (s in sockets):

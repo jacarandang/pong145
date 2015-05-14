@@ -18,7 +18,8 @@ class Client:
 		def send_msg(sock):
 			while 1:
 				message = sys.stdin.readline()
-				sock.send(str.encode(message))
+				#sock.send(str.encode(message))
+				sock.send(message)
 				#sock.sendto(data, target)
 				if "quit" in message:
 					break
@@ -26,7 +27,7 @@ class Client:
 		def recv_msg(sock):
 			while 1:
 				data = sock.recv(1024)
-				data = bytes.decode(data)
+				#data = bytes.decode(data)
 				if "quit" in data:
 					print("bye")
 					break
