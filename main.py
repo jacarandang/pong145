@@ -8,6 +8,8 @@ from classes.pong import pongSprite
 from classes.ball import ballSprite
 from classes.stuff import splitterSprite
 
+pygame.font.init()
+
 class Main:
 
     def __init__(self, screen):
@@ -41,6 +43,8 @@ class Main:
         self.stuffGroup = pygame.sprite.Group()
         self.stuffGroup.add()
 
+        self.font = pygame.font.Font("resource/font.ttf", 350)
+
     def addBall(self, x, y, dx, dy):
         ball = ballSprite.ballSprite(x, y, dx, dy)
         ball.setLeftPong(self.player1)
@@ -66,6 +70,58 @@ class Main:
                 if event.key in [K_a, K_z]:
                     self.player2.stopMoving()
 
+    def count_down(self):
+        rem = 4
+
+        base_time = time.time()
+        time_image = self.font.render(str(rem), True, (255, 255, 255), None)
+        time_rect = time_image.get_rect()
+        time_rect.center = 400, 300
+
+        self.running = True
+        self.quit = False
+
+        overlay = pygame.Surface((800, 600)).convert()
+        overlay.fill((0, 0, 0))
+        overlay.set_alpha(200)
+
+        while(self.running):
+            nrem = int(4 - (time.time() - base_time))
+            if(nrem < rem):
+                rem = nrem
+                time_image = self.font.render(str(rem), True, (255, 255, 255), None)
+                time_rect = time_image.get_rect()
+                time_rect.center = 400, 300
+
+            self.clock.tick(60)
+
+            self.screen.blit(self.bg, (0, 0))
+
+            self.stageGroup.update()
+            self.stuffGroup.update()
+            self.spriteGroup.update()
+
+            self.stageGroup.draw(self.screen)
+            self.stuffGroup.draw(self.screen)
+            self.spriteGroup.draw(self.screen)
+
+            self.screen.blit(overlay, (0, 0))
+            self.screen.blit(time_image, time_rect)
+
+
+            pygame.display.flip()
+            if(rem == 0):
+                break
+
+            for event in pygame.event.get():
+                if event.type == QUIT:
+                    self.running = False
+                    self.quit = True
+
+        if self.quit:
+            return
+        self.start()
+
     def start(self):
         self.running = True
         self.ball.initiate()
@@ -88,10 +144,13 @@ class Main:
 
             pygame.display.flip()
 
+    def gameover(self):
+        pass
+
 if __name__ == '__main__':
     pygame.init()
     pygame.display.set_caption("Pong")
     pygame.key.set_repeat(1, 10)
     screen = pygame.display.set_mode((800, 600))
     game = Main(screen)
-    game.start()
+    game.count_down()
