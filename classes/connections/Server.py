@@ -1,36 +1,69 @@
 import socket, threading
 
-HOST = "localhost"
-PORT = 8000
+#class Server:
 
-class Server:
+HOST = "127.0.0.1"
+PORT = 8888
 
-    def __init__(self, host = HOST, port = PORT):
-        self.s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.clients = []
-        self.s.bind((host, port))
-        self.s.listen(6)
-        self.messageList = []
+#clients list
+sockets = []
+def server():
+	ssocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+	print("Starting server...")
 
-    def sendToAll(self, msg):
-        for c in self.clients:
-            c.send(msg)
+	ssocket.bind((HOST, PORT))
+	ssocket.listen(5)
+	print("Server initialized")
 
-    def begin(self):
-        cl1, address1 = self.s.accept()
-        print "One player connected at", address1
-        self.clients.append(cl1)
-        cl2, address2 = self.s.accept()
-        print "One player connected at", address2
-        self.clients.append(cl2)
-        print "Two players connected, ready"
+	sockets.append(ssocket)
 
-    def listen(self, client):
-        while(1):
-            a = client.recv(1024)
-            self.messageList.append(a)
-    def beginListen(self):
-        for cl in self.clients:
-            threading.Thread(target = self.listen, args = (cl))
-        while(1):
-            pass
+	print("Waiting for a connection..")
+
+	while(1):
+		# 4th is timeout
+		read, write, error = select.select(sockets, [], [], 0)
+
+		for s in read:
+			# new client
+			if s == ssocket:
+				client, address = ssocket.accept()
+				sockets.append(client)
+				print "Client (%s, %s) connected" % address
+				#print(str(client) + " connected!")
+				sendToAll(ssocket, client, "[%s:%s] joined\n" % address)
+			# new message
+			else:
+				try:
+					data = s.recv(1024)
+					if data:
+						#data = bytes.decode(data)
+						print(data)
+						if "quit" in data:
+							#s.send(str.encode("quit"))
+							s.send("quit")
+						else:
+							sendToAll(ssocket, s, data)
+					else:
+						if s in sockets:
+							sockets.remove(s)
+						sendToAll(ssocket, s, "Client (%s, %s) is offline\n" % address)
+				except:
+					sendToAll(ssocket, s, "Client (%s, %s) is offline\n" % address)
+					continue
+	ssocket.close()
+
+def sendToAll(ssocket, sock, message):
+	for s in sockets:
+		if (s!=ssocket):
+			try:
+				#s.send(str.encode(message))
+				s.send(message)
+			except:
+				s.close()
+				if (s in sockets):
+					sockets.remove(s)
+
+if __name__ == "__main__":
+	sys.exit(server())
+
+>>>>>>> connection
