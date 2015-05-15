@@ -1,6 +1,6 @@
 from classes.ball import baseBall
 from classes.pong import basePong
-from classes.connections import *
+from classes.connections import Server
 
 class ServerGame:
 
@@ -13,7 +13,7 @@ class ServerGame:
         self.ball.setLeftPong(self.playerl)
         self.ball.setRightPong(self.playerr)
 
-    def start()
+    def start():
         self.ball.initiate()
         running = True
         while(running):
@@ -25,4 +25,11 @@ class ServerGame:
                 running = False
 
 if __name__ == '__main__':
-    #start listening
+    server = Server.Server()
+
+    print "Server started, Waiting for players"
+    server.begin()
+    server.sendToAll("End")
+    server.s.close()
+    server.beginListen()
+    
