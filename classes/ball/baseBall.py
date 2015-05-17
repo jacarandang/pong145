@@ -20,9 +20,19 @@ class baseBall:
     def setRightPong(self, rightPong):
         self.rightPong = rightPong
 
-    def initiate(self):
-        self.dx = random.choice([3, 3])
-        self.dy = random.choice([3, -3])
+    def initiate(self, dx = None, dy = None):
+        self.dt = time.time()
+        if dx is None:
+            self.dx = random.choice([3, -3])
+        else:
+            self.dx = dx
+
+        if dy is None:
+            self.dy = random.choice([3, -3])
+        else:
+            self.dy = dy
+
+        return (self.dx, self.dy)
 
     def update(self):
         self.onPong()

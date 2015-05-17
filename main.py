@@ -7,12 +7,13 @@ from classes.board import boardSprite
 from classes.pong import pongSprite
 from classes.ball import ballSprite
 from classes.stuff import splitterSprite
+from classes.connections import Client
 
 pygame.font.init()
 
 class Main:
 
-    def __init__(self, screen):
+    def __init__(self, screen, client, player):
         self.screen = screen
         self.bg = pygame.Surface(screen.get_size()).convert()
         self.bg.fill((0, 0, 0))
@@ -45,6 +46,9 @@ class Main:
 
         self.font = pygame.font.Font("resource/font.ttf", 350)
 
+        self.client = client
+        self.player = player
+
     def addBall(self, x, y, dx, dy):
         ball = ballSprite.ballSprite(x, y, dx, dy)
         ball.setLeftPong(self.player1)
@@ -57,18 +61,48 @@ class Main:
                 self.running = False
             elif event.type == KEYDOWN:
                 if event.key == K_UP:
-                    self.player1.startMovingUp()
+                    if self.player == 1:
+                        self.player1.startMovingUp()
+                    else:
+                        self.player2.startMovingUp()
+                    self.client.send("up")
                 elif event.key == K_DOWN:
-                    self.player1.startMovingDown()
-                if event.key == K_a:
-                    self.player2.startMovingUp()
-                elif event.key == K_z:
-                    self.player2.startMovingDown()
+                    if self.player == 1:
+                        self.player1.startMovingDown()
+                    else:
+                        self.player2.startMovingDown()
+                    self.client.send("down")
             elif event.type == KEYUP:
                 if event.key in [K_UP, K_DOWN]:
-                    self.player1.stopMoving()
-                if event.key in [K_a, K_z]:
-                    self.player2.stopMoving()
+                    if self.player == 1:
+                        self.player1.stopMoving()
+                    else:
+                        self.player2.stopMoving()
+                    self.client.send("stop")
+
+    def process_message(self):
+        for msg in self.client.get_all():
+            msgs = msg.split()
+            if msgs[0] == "player":
+                if msgs[1] == "1":
+                    if msgs[2] == "up":
+                        self.player1.startMovingUp()
+                    elif msgs[2] == "down":
+                        self.player1.startMovingDown()
+                    elif msgs[2] == "stop":
+                        self.player1.stopMoving()
+                if msgs[1] == "2":
+                    if msgs[2] == "up":
+                        self.player2.startMovingUp()
+                    elif msgs[2] == "down":
+                        self.player2.startMovingDown()
+                    elif msgs[2] == "stop":
+                        self.player2.stopMoving()
+            if msgs[0] == "ball":
+                bx = float(msgs[1])
+                by = float(msgs[2])
+                self.ball.x = bx
+                self.ball.y = by
 
     def count_down(self):
         rem = 4
@@ -120,13 +154,17 @@ class Main:
 
         if self.quit:
             return
+        self.client.send("READY")
         self.start()
 
     def start(self):
         self.running = True
-        self.ball.initiate()
+        init = self.client.wait_message().split()
+        self.ball.initiate(int(init[0]), int(init[1]))
+
         while(self.running):
             self.check_events()
+            self.process_message()
             self.clock.tick(60)
 
             self.screen.blit(self.bg, (0, 0))
@@ -152,5 +190,16 @@ if __name__ == '__main__':
     pygame.display.set_caption("Pong")
     pygame.key.set_repeat(1, 10)
     screen = pygame.display.set_mode((800, 600))
-    game = Main(screen)
-    game.count_down()
+
+    client = Client.Client()
+    client.begin_listening()
+
+    pl = int(client.wait_message())
+    game = Main(screen, client, pl)
+
+    while(True):
+        if len(client.messageList) != 0:
+            msg = client.messageList.pop(0)
+            if msg == "COUNTDOWN":
+                print msg
+                game.count_down()
