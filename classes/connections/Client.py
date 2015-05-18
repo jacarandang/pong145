@@ -50,7 +50,7 @@ class Client:
 		a = self.messageList
 		self.messageList = []
 		return a
-		
+
 # class Client:
 # 	def client():
 # 		HOST = "127.0.0.1"
