@@ -82,6 +82,7 @@ class Main:
 
     def process_message(self):
         for msg in self.client.get_all():
+            print msg
             msgs = msg.split()
             if msgs[0] == "player":
                 if msgs[1] == "1":
@@ -91,6 +92,11 @@ class Main:
                         self.player1.startMovingDown()
                     elif msgs[2] == "stop":
                         self.player1.stopMoving()
+                    elif msgs[2] == "pos":
+                        x = float(msgs[3])
+                        y = float(msgs[4])
+                        self.player1.x = x
+                        self.player1.y = y
                 if msgs[1] == "2":
                     if msgs[2] == "up":
                         self.player2.startMovingUp()
@@ -98,6 +104,12 @@ class Main:
                         self.player2.startMovingDown()
                     elif msgs[2] == "stop":
                         self.player2.stopMoving()
+                    elif msgs[2] == "pos":
+                        x = float(msgs[3])
+                        y = float(msgs[4])
+                        self.player2.x = x
+                        self.player2.y = y
+
             if msgs[0] == "ball":
                 bx = float(msgs[1])
                 by = float(msgs[2])

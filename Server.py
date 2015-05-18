@@ -4,6 +4,8 @@ from classes.ball import baseBall
 from classes.pong import basePong
 from classes.connections import Server
 
+import pygame
+
 class ServerGame:
 
     def __init__(self, server):
@@ -57,18 +59,22 @@ class ServerGame:
                     self.playerr.stopMoving()
 
     def update_status(self):
-        self.server.send_to_all("ball "+str(self.ball.x)+" "+str(self.ball.y))
-        print self.playerl.x, self.playerl.y
-        print self.playerr.x, self.playerr.y
+        self.server.send_to_all("ball "+str(self.ball.x)+" "+str(self.ball.y)+"\n")
+        self.server.send_to_all("player 1 pos " + str(self.playerl.x) + " " + str(self.playerl.y)+"\n")
+        self.server.send_to_all("player 2 pos " + str(self.playerr.x) + " " + str(self.playerr.y)+"\n")
 
     def start(self):
         (x, y) = self.ball.initiate()
         running = True
 
         self.server.send_to_all(str(x)+" "+str(y))
-        self.playerl.time = self.playerr.time = time.time()
+        self.playerl.time = time.time()
+        self.playerr.time = time.time()
+
+        timer = pygame.time.Clock()
 
         while(running):
+            timer.tick(60)
             if self.ball.out:
                 break
             self.process_message()
