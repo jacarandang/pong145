@@ -229,7 +229,7 @@ class Main:
         rem = 4
 
         base_time = time.time()
-        time_image = self.font.render(str(rem), True, (255, 255, 255), None)
+        time_image = self.font.render(str(rem), True, (255, 255, 255), (0, 0, 0))
         time_rect = time_image.get_rect()
         time_rect.center = 400, 300
 
@@ -244,7 +244,7 @@ class Main:
             nrem = int(4 - (time.time() - base_time))
             if(nrem < rem):
                 rem = nrem
-                time_image = self.font.render(str(rem), True, (255, 255, 255), None)
+                time_image = self.font.render(str(rem), True, (255, 255, 255), (0, 0, 0))
                 time_rect = time_image.get_rect()
                 time_rect.center = 400, 300
 
