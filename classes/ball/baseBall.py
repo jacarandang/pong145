@@ -13,6 +13,7 @@ class baseBall:
         self.leftPong = None
         self.rightPong = None
         self.out = False
+        self.side = -1
 
     def setLeftPong(self, leftPong):
         self.leftPong = leftPong
@@ -23,7 +24,7 @@ class baseBall:
     def initiate(self, dx = None, dy = None):
         self.dt = time.time()
         if dx is None:
-            self.dx = random.choice([3, -3])
+            self.dx = random.choice([-3, -3])
         else:
             self.dx = dx
 
@@ -57,7 +58,12 @@ class baseBall:
     def outOfBounds(self):
         if self.x < 0 or self.x > 800:
             self.out = True
+            if self.x < 0:
+                self.side = 2
+            else:
+                self.side = 1
             return True
+
 
     def onPong(self):
         if self.leftPong is None or self.rightPong is None:

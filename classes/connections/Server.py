@@ -1,6 +1,6 @@
 import socket, threading
 
-HOST = "127.0.0.1"
+HOST = "localhost"
 PORT = 8888
 
 class Server:
@@ -19,11 +19,13 @@ class Server:
 		while(True):
 			try:
 				msg = client.recv(1024)
+				msgs = msg.split("\n")
 			except:
 				print "Client Disconnected"
 				client.close()
 				break
-			self.messageList.append((client, msg))
+			for message in msgs:
+				self.messageList.append((client, message))
 
 	def begin_listening(self):
 		threading.Thread(target = self.listen, args = (self.player1, )).start()

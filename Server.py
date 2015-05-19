@@ -3,6 +3,7 @@ import time
 from classes.ball import baseBall
 from classes.pong import basePong
 from classes.connections import Server
+from classes.stuff import baseBooster
 
 import pygame
 
@@ -59,7 +60,7 @@ class ServerGame:
                     self.playerr.stopMoving()
 
     def update_status(self):
-        self.server.send_to_all("ball "+str(self.ball.x)+" "+str(self.ball.y)+"\n")
+        self.server.send_to_all("ball "+str(self.ball.x)+" "+str(self.ball.y)+" "+str(self.ball.dx)+" "+str(self.ball.dy)+"\n")
         self.server.send_to_all("player 1 pos " + str(self.playerl.x) + " " + str(self.playerl.y)+"\n")
         self.server.send_to_all("player 2 pos " + str(self.playerr.x) + " " + str(self.playerr.y)+"\n")
 
@@ -71,23 +72,35 @@ class ServerGame:
         self.playerl.time = time.time()
         self.playerr.time = time.time()
 
-        timer = pygame.time.Clock()
+        booster = baseBooster.baseBooster(3, 0, 400, 300)
+        booster.addBall(self.ball)
+        stuff = [booster]
 
         while(running):
-            timer.tick(60)
             if self.ball.out:
+                self.server.send_to_all("GAMEOVER\n")
+                self.side = self.ball.side
+                self.server.send_to_all("WIN "+str(self.ball)+"\n")
                 break
+
             self.process_message()
             self.ball.update()
             self.playerl.update()
             self.playerr.update()
+            for s in stuff:
+                s.update()
 
-            if time.time() - self.timer >= 1:
+            if time.time() - self.timer >= .25:
                 self.timer = time.time()
                 self.update_status()
 
 if __name__ == '__main__':
-    server = Server.Server()
+    print "Enter address"
+    add = raw_input()
+    print "Enter port"
+    port = raw_input()
+
+    server = Server.Server(add, port)
 
     print "Server started, Waiting for players"
     server.start()

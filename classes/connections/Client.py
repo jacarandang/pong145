@@ -5,7 +5,7 @@ import threading
 
 import socket, threading
 
-HOST = "127.0.0.1"
+HOST = "localhost"
 PORT = 8888
 
 class Client:
@@ -22,12 +22,15 @@ class Client:
 		while(True):
 			try:
 				msg = self.socket.recv(1024)
+				msgs = msg.split("\n")
 			except:
 				print "Server Disconnected"
 				self.socket.close()
 				self.connected = False
 				break
-			self.messageList.append(msg)
+			for message in msgs:
+				if message == "": continue
+				self.messageList.append(message)
 
 	def begin_listening(self):
 		threading.Thread(target = self.listen).start()
@@ -50,6 +53,9 @@ class Client:
 		a = self.messageList
 		self.messageList = []
 		return a
+
+	def push_back(self, msg):
+		self.messageList = [msg] + self.messageList
 
 # class Client:
 # 	def client():
