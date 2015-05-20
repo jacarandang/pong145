@@ -18,5 +18,5 @@ class baseSplitter(baseStuff):
             for ball in self.balls:
                 if self.inRange[ball]:
                     ball_angle = degrees(atan2(ball.y, ball.x))
-                    self.main.addBall(ball.x, ball.y, ball.dx, -ball.dy)
+                    self.main.add_ball(ball.x, ball.y, ball.dx, -ball.dy)
                     self.timeout = time.time()

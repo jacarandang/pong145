@@ -56,10 +56,12 @@ class Main:
 
         self.selected = None
 
-    def addBall(self, x, y, dx, dy):
+    def add_ball(self, x, y, dx, dy):
         ball = ballSprite.ballSprite(x, y, dx, dy)
         ball.setLeftPong(self.player1)
         ball.setRightPong(self.player2)
+        for stuff in self.stuffGroup:
+            stuff.addBall(ball)
         self.spriteGroup.add(ball)
         self.balls.append(ball)
 
@@ -223,10 +225,11 @@ class Main:
                         (self.selected.x, self.selected.y) = pygame.mouse.get_pos()
                         self.selected.onMouse = False
                         self.stuffGroup.add(self.selected)
+                        self.selected.addBall(self.ball)
                         self.selected = None
 
     def count_down(self):
-        rem = 4
+        rem = 3
 
         base_time = time.time()
         time_image = self.font.render(str(rem), True, (255, 255, 255), (0, 0, 0))
@@ -264,7 +267,7 @@ class Main:
             self.screen.blit(time_image, time_rect)
 
             pygame.display.flip()
-            if(rem == 0):
+            if(time.time() - base_time >= 3):
                 break
 
             for event in pygame.event.get():
@@ -342,11 +345,8 @@ if __name__ == '__main__':
     pl = int(client.wait_message())
     game = Main(screen, client, pl)
     game.placement()
-    while not game.ball.out:
-        if len(client.messageList) != 0:
-            msg = client.messageList.pop(0)
-            if msg == "COUNTDOWN":
-                game.count_down()
-                print "break"
+    msg = client.wait_message()
+    if msg == "COUNTDOWN":
+        game.count_down()
     print "End Game"
     pygame.quit()

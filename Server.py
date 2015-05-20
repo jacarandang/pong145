@@ -28,8 +28,19 @@ class ServerGame:
             if count == 2:
                 break
 
+        self.balls = [self.ball]
+
         self.timer = time.time()
         self.start()
+
+    def add_ball(self, x, y, dx, dy):
+        ball = ballSprite.ballSprite(x, y, dx, dy)
+        ball.setLeftPong(self.player1)
+        ball.setRightPong(self.player2)
+        for stuff in self.stuffGroup:
+            stuff.addBall(ball)
+        self.spriteGroup.add(ball)
+        self.balls.append(ball)
 
 
     def process_message(self):
