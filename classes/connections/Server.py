@@ -8,15 +8,20 @@ class Server:
 	def __init__(self, host = HOST, port = PORT):
 		self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 		print("Starting Server")
-		self.socket.bind((HOST, PORT))
+		self.socket.bind((host, int(port)))
 		self.socket.listen(4)
 		print("Server Initialized")
 		self.player1 = None
 		self.player2 = None
 		self.messageList = []
+		self.quit = False
 
 	def listen(self, client):
 		while(True):
+			if self.quit == True:
+				client.shutdown()
+				client.close()
+				break
 			try:
 				msg = client.recv(1024)
 				msgs = msg.split("\n")
@@ -25,6 +30,7 @@ class Server:
 				client.close()
 				break
 			for message in msgs:
+				if message == "": continue
 				self.messageList.append((client, message))
 
 	def begin_listening(self):
@@ -69,6 +75,9 @@ class Server:
 		a = self.messageList[:]
 		self.messageList = []
 		return a
+
+	def kill_all(self):
+		self.quit = True
 
 # #clients list
 # sockets = []

@@ -16,8 +16,7 @@ class baseStuff:
 
     def removeBall(self, ball):
         self.balls.remove(ball)
-        self.time.pop(ball)
-        self.inRange(ball)
+        self.inRange.pop(ball)
 
     def checkInRange(self):
         for ball in self.balls:

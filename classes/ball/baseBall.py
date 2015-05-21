@@ -63,6 +63,7 @@ class baseBall:
             else:
                 self.side = 1
             return True
+        return False
 
 
     def onPong(self):

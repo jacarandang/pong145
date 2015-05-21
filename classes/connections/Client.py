@@ -13,7 +13,7 @@ class Client:
 	def __init__(self, host = HOST, port = PORT):
 		self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 		print("Connecting to Server")
-		self.socket.connect((HOST, PORT))
+		self.socket.connect((host, int(port)))
 		print("Connected")
 		self.messageList = []
 		self.connected = True
@@ -36,7 +36,7 @@ class Client:
 		threading.Thread(target = self.listen).start()
 
 	def send(self, msg):
-		self.socket.send(msg)
+		self.socket.send(msg+"\n")
 
 	def get_message(self):
 		if len(self.messageList) == 0:

@@ -10,6 +10,7 @@ class baseBooster(baseStuff):
         baseStuff.__init__(self, x, y, 100, 50)
         self.timer = time.time()
         self.timeout = time.time()
+        self.type = "booster"
 
     def update(self):
         dt = time.time() - self.timer

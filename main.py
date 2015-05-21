@@ -23,6 +23,7 @@ class Main:
 
         self.clock = pygame.time.Clock();
         self.running = False
+        self.quit = False
 
         self.board = boardSprite.boardSprite()
 
@@ -50,11 +51,43 @@ class Main:
 
         self.font = pygame.font.Font("resource/font.ttf", 350)
         self.font2 = pygame.font.Font("resource/font.ttf", 32)
+        self.font3 = pygame.font.Font("resource/font.ttf", 150)
 
         self.client = client
         self.player = player
 
         self.selected = None
+
+    def wait(self):
+        wait_img = self.font2.render("WAITING FOR PLAYERS", True, (0, 0, 0), (255, 255, 255))
+        wait_rect = wait_img.get_rect()
+        wait_rect.center = 400, 500
+
+        title_img = self.font3.render("PONG", True, (255, 255, 255), None)
+        title_rect = title_img.get_rect()
+        title_rect.center = 400, 200
+
+        self.running = True
+
+        while(self.running):
+            self.screen.blit(self.bg, (0, 0))
+            self.screen.blit(wait_img, wait_rect)
+            self.screen.blit(title_img, title_rect)
+
+            pygame.display.flip()
+
+            msg = self.client.get_message()
+            if msg == "COUNTDOWN":
+                break
+
+            for event in pygame.event.get():
+                if event.type == QUIT:
+                    self.quit = True
+                    self.running = False
+                    break
+        if self.quit:
+            return
+        self.placement()
 
     def add_ball(self, x, y, dx, dy):
         ball = ballSprite.ballSprite(x, y, dx, dy)
@@ -64,6 +97,12 @@ class Main:
             stuff.addBall(ball)
         self.spriteGroup.add(ball)
         self.balls.append(ball)
+
+    def remove_ball(self, ball):
+        self.balls.remove(ball)
+        for stuff in self.stuffGroup:
+            stuff.removeBall(ball)
+        self.spriteGroup.remove(ball)
 
     def check_events(self):
         for event in pygame.event.get():
@@ -92,7 +131,6 @@ class Main:
 
     def process_message(self):
         for msg in self.client.get_all():
-            print msg
             msgs = msg.split()
             if msgs[0] == "player":
                 if msgs[1] == "1":
@@ -121,14 +159,22 @@ class Main:
                         self.player2.y = y
 
             if msgs[0] == "ball":
-                bx = float(msgs[1])
-                by = float(msgs[2])
-                bdx = float(msgs[3])
-                bdy = float(msgs[4])
-                self.ball.x = bx
-                self.ball.y = by
-                self.ball.dx = bdx
-                self.ball.dy = bdy
+                idx = int(msgs[1])
+                bx = float(msgs[2])
+                by = float(msgs[3])
+                bdx = float(msgs[4])
+                bdy = float(msgs[5])
+                if idx >= len(self.balls):
+                    self.add_ball(bx, by, bdx, bdy)
+                else:
+                    ball = self.balls[idx]
+                    ball.x = bx
+                    ball.y = by
+                    ball.dx = bdx
+                    ball.dy = bdy
+
+            if msgs[0] == "GAMEOVER":
+                self.running = False
 
     #SETTER OF SELECTED
     def set_boosterr(self):
@@ -143,7 +189,6 @@ class Main:
         self.selected = splitterSprite.splitterSprite(0, 0, self, loadImage("splitter.png", None), True)
 
     def placement(self):
-
         self.running = True
         def ready():
             self.running = False
@@ -228,6 +273,14 @@ class Main:
                         self.selected.addBall(self.ball)
                         self.selected = None
 
+        for stuff in self.stuffGroup:
+            if stuff.type=="splitter":
+                self.client.send("splitter "+str(stuff.x)+" "+str(stuff.y)+"\n")
+            elif stuff.type=="booster":
+                self.client.send("booster "+str(stuff.x)+" "+str(stuff.y)+" "+str(stuff.dx)+" "+str(stuff.dy)+"\n")
+
+        self.count_down()
+
     def count_down(self):
         rem = 3
 
@@ -286,7 +339,7 @@ class Main:
         init = self.client.wait_message().split()
         self.ball.initiate(int(init[0]), int(init[1]))
 
-        booster = boosterSprite.boosterSprite(3, 0, 400, 300, loadImage("boosterr.png", None), False)
+        booster = splitterSprite.splitterSprite(400, 300, self, loadImage("splitter.png", None), False)
         booster.addBall(self.ball)
         splitter = splitterSprite.splitterSprite(400, 400, self, loadImage("splitter.png", None), False)
         splitter.addBall(self.ball)
@@ -308,12 +361,16 @@ class Main:
             self.spriteGroup.draw(self.screen)
             pygame.display.flip()
 
-            if self.ball.outOfBounds():
+            for ball in self.balls:
+                if ball.out:
+                    self.remove_ball(ball)
+
+            if len(self.balls) == 0:
                 msg = self.client.wait_message()
                 if msg == "GAMEOVER":
                     break
 
-        if self.ball.out: self.gameover()
+        if len(self.balls) == 0: self.gameover()
 
     def gameover(self):
         pygame.display.flip()
@@ -344,9 +401,7 @@ if __name__ == '__main__':
 
     pl = int(client.wait_message())
     game = Main(screen, client, pl)
-    game.placement()
-    msg = client.wait_message()
-    if msg == "COUNTDOWN":
-        game.count_down()
+    game.wait()
+    # game.placement()
     print "End Game"
     pygame.quit()
