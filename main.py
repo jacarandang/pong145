@@ -194,6 +194,8 @@ class Main:
             if msgs[0] == "GAMEOVER":
                 self.running = False
                 self.gameover = True
+                print "in process end"
+                return
 
     #SETTER OF SELECTED
     def set_boosterr(self):
@@ -418,6 +420,7 @@ class Main:
         while(self.running):
             self.check_events()
             self.process_message()
+            print "back"
             self.clock.tick(60) #resource intensive but fixes bugged pong and slider
 
             self.screen.blit(self.bg, (0, 0))
@@ -465,7 +468,8 @@ class Main:
                         self.gameover = True
                         break
 
-        if len(self.balls) == 0: self.display_gameover()
+        if len(self.balls) == 0 or self.gameover == True: self.display_gameover()
+
 
     def display_gameover(self):
         gameover = pygame.mixer.Sound("resource/gameover.wav")
