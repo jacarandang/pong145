@@ -468,6 +468,8 @@ class Main:
         if len(self.balls) == 0: self.display_gameover()
 
     def display_gameover(self):
+        gameover = pygame.mixer.Sound("resource/gameover.wav")
+        gameover.play()
         pygame.display.flip()
         go_image = loadImage("gameover.jpg", None)
         go_rect = go_image.get_rect()
