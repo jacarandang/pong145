@@ -12,6 +12,7 @@ class Client:
 
 	def __init__(self, host = HOST, port = PORT):
 		self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+		self.socket.setsockopt(socket.IPPROTO_TCP, socket.TCP_NODELAY, 1)
 		print("Connecting to Server")
 		self.socket.connect((host, int(port)))
 		print("Connected")
