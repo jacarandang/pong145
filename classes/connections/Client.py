@@ -17,9 +17,12 @@ class Client:
 		print("Connected")
 		self.messageList = []
 		self.connected = True
+		self.kill = False
 
 	def listen(self):
 		while(True):
+			if self.kill:
+				break
 			try:
 				msg = self.socket.recv(1024)
 				msgs = msg.split("\n")
@@ -30,6 +33,10 @@ class Client:
 				break
 			for message in msgs:
 				if message == "": continue
+				if message == "QUIT":
+					self.socket.shutdown(socket.SHUT_RDWR)
+					self.socket.close()
+					self.kill = True
 				self.messageList.append(message)
 
 	def begin_listening(self):
@@ -56,6 +63,10 @@ class Client:
 
 	def push_back(self, msg):
 		self.messageList = [msg] + self.messageList
+
+	def kill_all(self):
+		self.kill = True
+		self.socket.close()
 
 # class Client:
 # 	def client():

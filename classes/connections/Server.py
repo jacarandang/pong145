@@ -18,12 +18,13 @@ class Server:
 
 	def listen(self, client):
 		while(True):
-			if self.quit == True:
-				client.shutdown()
-				client.close()
+			if self.quit:
 				break
 			try:
 				msg = client.recv(1024)
+				if not msg:
+					client.close()
+					break
 				msgs = msg.split("\n")
 			except:
 				print "Client Disconnected"
@@ -31,6 +32,9 @@ class Server:
 				break
 			for message in msgs:
 				if message == "": continue
+				if message == "QUIT":
+					client.close()
+					self.quit = True
 				self.messageList.append((client, message))
 
 	def begin_listening(self):

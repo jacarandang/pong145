@@ -24,6 +24,7 @@ class Main:
         self.clock = pygame.time.Clock();
         self.running = False
         self.quit = False
+        self.gameover = False
 
         self.board = boardSprite.boardSprite()
 
@@ -59,6 +60,9 @@ class Main:
         self.selected = None
 
     def wait(self):
+        def ready():
+            self.running = False
+
         wait_img = self.font2.render("WAITING FOR PLAYERS", True, (0, 0, 0), (255, 255, 255))
         wait_rect = wait_img.get_rect()
         wait_rect.center = 400, 500
@@ -67,24 +71,37 @@ class Main:
         title_rect = title_img.get_rect()
         title_rect.center = 400, 200
 
+        buttongroup = []
+
+        bready = Button(self.font2.render("READY", True, (255, 255, 255), None), (400, 550), ready)
+
         self.running = True
+        ready = False
 
         while(self.running):
             self.screen.blit(self.bg, (0, 0))
-            self.screen.blit(wait_img, wait_rect)
+            if not ready: self.screen.blit(wait_img, wait_rect)
             self.screen.blit(title_img, title_rect)
+            for b in buttongroup:
+                b.update()
+                self.screen.blit(b.image, b.rect)
 
             pygame.display.flip()
 
             msg = self.client.get_message()
-            if msg == "COUNTDOWN":
-                break
+            if msg == "START":
+                buttongroup.append(bready)
+                ready = True
 
             for event in pygame.event.get():
+                if event.type == MOUSEBUTTONDOWN:
+                    for b in buttongroup:
+                        b.click()
                 if event.type == QUIT:
                     self.quit = True
                     self.running = False
                     break
+
         if self.quit:
             return
         self.placement()
@@ -175,6 +192,7 @@ class Main:
 
             if msgs[0] == "GAMEOVER":
                 self.running = False
+                self.gameover = True
 
     #SETTER OF SELECTED
     def set_boosterr(self):
@@ -234,6 +252,8 @@ class Main:
 
         buttonlist = [bboosterr, bboosterl, bboosteru, bboosterd, bsplitter, bready]
 
+        nope = pygame.mixer.Sound("resource/nope.wav")
+
         while(self.running):
             self.clock.tick(60)
 
@@ -267,19 +287,55 @@ class Main:
                         for b in buttonlist:
                             b.click()
                     elif self.selected:
-                        (self.selected.x, self.selected.y) = pygame.mouse.get_pos()
-                        self.selected.onMouse = False
-                        self.stuffGroup.add(self.selected)
-                        self.selected.addBall(self.ball)
-                        self.selected = None
+                        if self.selected.rect.left > valid_area.left and self.selected.rect.right < valid_area.right and self.selected.rect.top > valid_area.top and self.selected.rect.bottom < valid_area.bottom:
+                            (self.selected.x, self.selected.y) = pygame.mouse.get_pos()
+                            self.selected.onMouse = False
+                            self.stuffGroup.add(self.selected)
+                            self.selected.addBall(self.ball)
+                            self.selected = None
+                        else:
+                            nope.play()
 
+        self.client.send("begin stuff")
         for stuff in self.stuffGroup:
             if stuff.type=="splitter":
                 self.client.send("splitter "+str(stuff.x)+" "+str(stuff.y)+"\n")
             elif stuff.type=="booster":
                 self.client.send("booster "+str(stuff.x)+" "+str(stuff.y)+" "+str(stuff.dx)+" "+str(stuff.dy)+"\n")
-
+        self.client.send("end stuff")
+        self.get_stuff()
         self.count_down()
+
+    def get_stuff(self):
+        self.stuffGroup = pygame.sprite.Group()
+        while(True):
+            msg = self.client.wait_message()
+            if msg == "end stuff":
+                break
+            msgs = msg.split(" ")
+            if msgs[0] == "booster":
+                x = float(msgs[1])
+                y = float(msgs[2])
+                dx = float(msgs[3])
+                dy = float(msgs[4])
+                img = None
+                if dx > 0:
+                    img = "boosterr.png"
+                elif dx < 0:
+                    img = "boosterl.png"
+                elif dy > 0:
+                    img = "boosterd.png"
+                elif dy < 0:
+                    img = "boosteru.png"
+                booster = boosterSprite.boosterSprite(dx, dy, x, y, loadImage(img, None), False)
+                booster.addBall(self.ball)
+                self.stuffGroup.add(booster)
+            if msgs[0] == "splitter":
+                x = float(msgs[1])
+                y = float(msgs[2])
+                splitter = splitterSprite.splitterSprite(x, y, self, loadImage("splitter.png", None), False)
+                splitter.addBall(self.ball)
+                self.stuffGroup.add(splitter)
 
     def count_down(self):
         rem = 3
@@ -339,12 +395,6 @@ class Main:
         init = self.client.wait_message().split()
         self.ball.initiate(int(init[0]), int(init[1]))
 
-        booster = splitterSprite.splitterSprite(400, 300, self, loadImage("splitter.png", None), False)
-        booster.addBall(self.ball)
-        splitter = splitterSprite.splitterSprite(400, 400, self, loadImage("splitter.png", None), False)
-        splitter.addBall(self.ball)
-        self.stuffGroup.add(booster, splitter)
-
         while(self.running):
             self.check_events()
             self.process_message()
@@ -366,13 +416,17 @@ class Main:
                     self.remove_ball(ball)
 
             if len(self.balls) == 0:
-                msg = self.client.wait_message()
-                if msg == "GAMEOVER":
+                if self.gameover:
                     break
+                else:
+                    msg = self.client.wait_message()
+                    if msg == "GAMEOVER":
+                        self.gameover = True
+                        break
 
-        if len(self.balls) == 0: self.gameover()
+        if len(self.balls) == 0: self.display_gameover()
 
-    def gameover(self):
+    def display_gameover(self):
         pygame.display.flip()
         go_image = loadImage("gameover.jpg", None)
         go_rect = go_image.get_rect()
@@ -392,6 +446,7 @@ if __name__ == '__main__':
     port = raw_input()
 
     pygame.init()
+    pygame.mixer.init()
     pygame.display.set_caption("Pong")
     # pygame.key.set_repeat(1, 10)
     screen = pygame.display.set_mode((800, 600))

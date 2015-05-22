@@ -12,7 +12,7 @@ class baseBooster(baseStuff):
         self.timeout = time.time()
         self.type = "booster"
 
-    def update(self):
+    def update(self, fxn = None):
         dt = time.time() - self.timer
         dt *= 100
         baseStuff.checkInRange(self)
@@ -22,4 +22,6 @@ class baseBooster(baseStuff):
                     ball.dx += self.dx
                     ball.dy += self.dy
                     self.timeout = time.time()
+                    if fxn is not None:
+                        fxn()
         self.timer = time.time()

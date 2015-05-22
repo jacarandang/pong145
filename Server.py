@@ -24,10 +24,12 @@ class ServerGame:
         self.timer = time.time()
 
         self.server = server
-        self.server.send_to_all("COUNTDOWN")
+        self.server.send_to_all("START")
 
         self.stuffGroup = []
         count = 0
+
+        self.do_stuff()
         while(True):
             msg = self.server.wait_message()
             if msg[1] == "READY":
@@ -52,7 +54,6 @@ class ServerGame:
 
     def process_message(self):
         for msg in self.server.get_all():
-            print msg
             if msg[1] == "up":
                 if msg[0] == self.server.player1:
                     self.server.send_to_all("player 1 up")
@@ -78,6 +79,39 @@ class ServerGame:
                     self.server.send_to_all("player 2 stop")
                     self.playerr.stopMoving()
 
+    def do_stuff(self):
+        end_c = 0
+        while(True):
+            msg = self.server.wait_message()[1]
+            if msg == "end stuff":
+                end_c += 1
+            if end_c >= 2:
+                break
+            msgs = msg.split(" ")
+            if msgs[0] == "splitter":
+                x = float(msgs[1])
+                y = float(msgs[2])
+                splitter = baseSplitter.baseSplitter(x, y, self)
+                splitter.addBall(self.ball)
+                self.stuffGroup.append(splitter)
+            elif msgs[0] == "booster":
+                x = float(msgs[1])
+                y = float(msgs[2])
+                dx = float(msgs[3])
+                dy = float(msgs[4])
+                booster = baseBooster.baseBooster(dx, dy, x, y)
+                booster.addBall(self.ball)
+                self.stuffGroup.append(booster)
+        self.send_stuff()
+
+    def send_stuff(self):
+        for stuff in self.stuffGroup:
+            if stuff.type == "booster":
+                self.server.send_to_all(stuff.type+" "+str(stuff.x)+" "+str(stuff.y)+" "+str(stuff.dx)+" "+str(stuff.dy)+"\n")
+            elif stuff.type == "splitter":
+                self.server.send_to_all(stuff.type+" "+str(stuff.x)+" "+str(stuff.y)+"\n")
+        self.server.send_to_all("end stuff")
+
     def update_status(self):
         for i in range(len(self.balls)):
             ball = self.balls[i]
@@ -89,16 +123,9 @@ class ServerGame:
         (x, y) = self.ball.initiate()
         running = True
 
-        self.server.send_to_all(str(x)+" "+str(y))
+        self.server.send_to_all(str(x)+" "+str(y)+"\n")
         self.playerl.time = time.time()
         self.playerr.time = time.time()
-
-        booster = baseSplitter.baseSplitter(400, 300, self)
-        booster.addBall(self.ball)
-        splitter = baseSplitter.baseSplitter(400, 400, self)
-        splitter.addBall(self.ball)
-
-        self.stuffGroup = [booster, splitter]
 
         while(running):
             for ball in self.balls:
@@ -136,4 +163,5 @@ if __name__ == '__main__':
     server.begin_listening()
     print "Players connected, starting game"
     game = ServerGame(server)
-    server.kill_all()
+    print "End game"
+    server.send_to_all("QUIT")
