@@ -56,27 +56,27 @@ class ServerGame:
         for msg in self.server.get_all():
             if msg[1] == "up":
                 if msg[0] == self.server.player1:
-                    self.server.send_to_all("player 1 up")
+                    self.server.send_to_all("p 1 u")
                     self.playerl.startMovingUp()
                 else:
-                    self.server.send_to_all("player 2 up")
+                    self.server.send_to_all("p 2 u")
                     self.playerr.startMovingUp()
 
             elif msg[1] == "down":
                 if msg[0] == self.server.player1:
-                    self.server.send_to_all("player 1 down")
+                    self.server.send_to_all("p 1 d")
                     self.playerl.startMovingDown()
                 else:
-                    self.server.send_to_all("player 2 down")
+                    self.server.send_to_all("p 2 d")
                     self.playerr.startMovingDown()
 
 
             elif msg[1] == "stop":
                 if msg[0] == self.server.player1:
-                    self.server.send_to_all("player 1 stop")
+                    self.server.send_to_all("p 1 s")
                     self.playerl.stopMoving()
                 else:
-                    self.server.send_to_all("player 2 stop")
+                    self.server.send_to_all("p 2 s")
                     self.playerr.stopMoving()
 
     def do_stuff(self):
@@ -115,9 +115,9 @@ class ServerGame:
     def update_status(self):
         for i in range(len(self.balls)):
             ball = self.balls[i]
-            self.server.send_to_all("ball "+str(i)+" "+str(ball.x)+" "+str(ball.y)+" "+str(ball.dx)+" "+str(ball.dy)+"\n")
-        self.server.send_to_all("player 1 pos " + str(self.playerl.x) + " " + str(self.playerl.y)+"\n")
-        self.server.send_to_all("player 2 pos " + str(self.playerr.x) + " " + str(self.playerr.y)+"\n")
+            self.server.send_to_all("b "+str(i)+" "+str(ball.x)+" "+str(ball.y)+" "+str(ball.dx)+" "+str(ball.dy)+"\n")
+        self.server.send_to_all("p 1 p " + str(self.playerl.x) + " " + str(self.playerl.y)+"\n")
+        self.server.send_to_all("p 2 p " + str(self.playerr.x) + " " + str(self.playerr.y)+"\n")
 
     def start(self):
         (x, y) = self.ball.initiate()

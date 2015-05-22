@@ -149,33 +149,33 @@ class Main:
     def process_message(self):
         for msg in self.client.get_all():
             msgs = msg.split()
-            if msgs[0] == "player":
+            if msgs[0] == "p":
                 if msgs[1] == "1":
-                    if msgs[2] == "up":
+                    if msgs[2] == "u" and self.player == 2:
                         self.player1.startMovingUp()
-                    elif msgs[2] == "down":
+                    elif msgs[2] == "d" and self.player == 2:
                         self.player1.startMovingDown()
-                    elif msgs[2] == "stop":
+                    elif msgs[2] == "s" and self.player == 2:
                         self.player1.stopMoving()
-                    elif msgs[2] == "pos":
+                    elif msgs[2] == "p":
                         x = float(msgs[3])
                         y = float(msgs[4])
                         self.player1.x = x
                         self.player1.y = y
                 if msgs[1] == "2":
-                    if msgs[2] == "up":
+                    if msgs[2] == "u" and self.player == 1:
                         self.player2.startMovingUp()
-                    elif msgs[2] == "down":
+                    elif msgs[2] == "d" and self.player == 1:
                         self.player2.startMovingDown()
-                    elif msgs[2] == "stop":
+                    elif msgs[2] == "s" and self.player == 1:
                         self.player2.stopMoving()
-                    elif msgs[2] == "pos":
+                    elif msgs[2] == "p":
                         x = float(msgs[3])
                         y = float(msgs[4])
                         self.player2.x = x
                         self.player2.y = y
 
-            if msgs[0] == "ball":
+            if msgs[0] == "b":
                 idx = int(msgs[1])
                 bx = float(msgs[2])
                 by = float(msgs[3])
