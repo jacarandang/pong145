@@ -11,6 +11,7 @@ class baseBooster(baseStuff):
         self.timer = time.time()
         self.timeout = time.time()
         self.type = "booster"
+        self.cost = 20
 
     def update(self, fxn = None):
         dt = time.time() - self.timer

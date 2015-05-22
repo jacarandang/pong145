@@ -12,6 +12,7 @@ class baseSplitter(baseStuff):
         self.main = main
         self.timeout = time.time()
         self.type = "splitter"
+        self.cost = 30
 
     def update(self):
         baseStuff.checkInRange(self)

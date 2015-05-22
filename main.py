@@ -58,6 +58,7 @@ class Main:
         self.player = player
 
         self.selected = None
+        self.limit = 60
 
     def wait(self):
         def ready():
@@ -283,15 +284,15 @@ class Main:
                     self.running = False
                     self.quit = True
                 elif event.type == MOUSEBUTTONDOWN:
-                    if not self.selected:
-                        for b in buttonlist:
-                            b.click()
-                    elif self.selected:
-                        if self.selected.rect.left > valid_area.left and self.selected.rect.right < valid_area.right and self.selected.rect.top > valid_area.top and self.selected.rect.bottom < valid_area.bottom:
+                    for b in buttonlist:
+                        b.click()
+                    if self.selected:
+                        if self.selected.rect.left > valid_area.left and self.selected.rect.right < valid_area.right and self.selected.rect.top > valid_area.top and self.selected.rect.bottom < valid_area.bottom and self.selected.cost <= self.limit:
                             (self.selected.x, self.selected.y) = pygame.mouse.get_pos()
                             self.selected.onMouse = False
                             self.stuffGroup.add(self.selected)
                             self.selected.addBall(self.ball)
+                            self.limit -= self.selected.cost
                             self.selected = None
                         else:
                             nope.play()
@@ -431,6 +432,15 @@ class Main:
         go_image = loadImage("gameover.jpg", None)
         go_rect = go_image.get_rect()
         go_rect.center = 400, 300
+
+        win_image = self.font3.render("YOU WIN", True, (255, 255, 255), None)
+        win_rect = win_image.get_rect()
+        win_rect.center = 400, 500
+
+        loose_image = self.font3.render("YOU LOSE", True, (255, 255, 255), None)
+        loose_rect = loose_image.get_rect()
+        loose_rect.center = 400, 500
+
         self.screen.blit(go_image, go_rect)
         pygame.display.flip()
         t = time.time()
