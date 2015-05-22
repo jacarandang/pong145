@@ -74,6 +74,8 @@ class baseBall:
             if self.dx < 0:
                 if self.y - self.r < self.leftPong.y + self.leftPong.h/2 and self.y + self.r > self.leftPong.y - self.leftPong.h/2 and self.x - self.r < self.leftPong.x + self.leftPong.w/2 and self.x + self.r > self.leftPong.x - self.leftPong.w/2:
                     self.dx = -self.dx
+                    self.leftPong.points += 1
             else:
                 if self.y - self.r < self.rightPong.y + self.rightPong.h/2 and self.y + self.r > self.rightPong.y - self.rightPong.h/2 and self.x - self.r < self.rightPong.x + self.rightPong.w/2 and self.x + self.r > self.rightPong.x - self.rightPong.w/2:
                     self.dx = -self.dx
+                    self.rightPong.points += 1

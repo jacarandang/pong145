@@ -255,6 +255,10 @@ class Main:
 
         nope = pygame.mixer.Sound("resource/nope.wav")
 
+        limit_image = self.font3.render(str(self.limit), True, (255, 255, 255), None)
+        limit_rect = limit_image.get_rect()
+        limit_rect.center = overlay.width/2 + overlay.left, 300
+
         while(self.running):
             self.clock.tick(60)
 
@@ -272,6 +276,7 @@ class Main:
             self.screen.blit(panel_img, panel_rect)
             buttongroup.draw(self.screen)
             self.screen.blit(overlay_img, overlay)
+            self.screen.blit(limit_image, limit_rect)
 
             if self.selected:
                 self.selected.update()
@@ -294,6 +299,10 @@ class Main:
                             self.selected.addBall(self.ball)
                             self.limit -= self.selected.cost
                             self.selected = None
+
+                            limit_image = self.font3.render(str(self.limit), True, (255, 255, 255), None)
+                            limit_rect = limit_image.get_rect()
+                            limit_rect.center = overlay.width/2 + overlay.left, 300
                         else:
                             nope.play()
 
@@ -396,6 +405,16 @@ class Main:
         init = self.client.wait_message().split()
         self.ball.initiate(int(init[0]), int(init[1]))
 
+        l_score = self.font2.render(str(self.player1.points), True, (255, 255, 255), (0, 0, 0))
+        l_rect = l_score.get_rect()
+        l_rect.center = 162, 300
+        l_score.set_alpha(100)
+
+        r_score = self.font2.render(str(self.player2.points), True, (255, 255, 255), (0, 0, 0))
+        r_rect = l_score.get_rect()
+        r_rect.center = 638, 300
+        r_score.set_alpha(100)
+
         while(self.running):
             self.check_events()
             self.process_message()
@@ -408,12 +427,33 @@ class Main:
             self.spriteGroup.update()
 
             self.stageGroup.draw(self.screen)
+
+            self.screen.blit(l_score, l_rect)
+            self.screen.blit(r_score, r_rect)
+
             self.stuffGroup.draw(self.screen)
             self.spriteGroup.draw(self.screen)
+
             pygame.display.flip()
+
+            #Change This
+            l_score = self.font2.render(str(self.player1.points), True, (255, 255, 255), (0, 0, 0))
+            l_rect = l_score.get_rect()
+            l_rect.center = 162, 300
+            l_score.set_alpha(100)
+
+            r_score = self.font2.render(str(self.player2.points), True, (255, 255, 255), (0, 0, 0))
+            r_rect = l_score.get_rect()
+            r_rect.center = 638, 300
+            r_score.set_alpha(100)
+            #end
 
             for ball in self.balls:
                 if ball.out:
+                    if ball.side == 2:
+                        self.player2.points += 5
+                    if ball.side == 1:
+                        self.player1.points += 5
                     self.remove_ball(ball)
 
             if len(self.balls) == 0:
@@ -432,6 +472,8 @@ class Main:
         go_image = loadImage("gameover.jpg", None)
         go_rect = go_image.get_rect()
         go_rect.center = 400, 300
+
+        msgs = self.client.wait_message().split(" ")
 
         win_image = self.font3.render("YOU WIN", True, (255, 255, 255), None)
         win_rect = win_image.get_rect()

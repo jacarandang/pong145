@@ -12,6 +12,8 @@ class basePong:
         self.dy = 0
         self.time = time.time()
 
+        self.points = 0
+
     def update(self):
         dt = time.time() - self.time
         dt *= 100
