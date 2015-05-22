@@ -474,6 +474,8 @@ class Main:
         go_rect.center = 400, 300
 
         msgs = self.client.wait_message().split(" ")
+        print msgs
+        pl = int(msgs[1])
 
         win_image = self.font3.render("YOU WIN", True, (255, 255, 255), None)
         win_rect = win_image.get_rect()
@@ -484,6 +486,10 @@ class Main:
         loose_rect.center = 400, 500
 
         self.screen.blit(go_image, go_rect)
+        if pl == self.player:
+            self.screen.blit(win_image, win_rect)
+        else:
+            self.screen.blit(loose_image, loose_rect)
         pygame.display.flip()
         t = time.time()
         while time.time() - t < 1:

@@ -135,9 +135,9 @@ class ServerGame:
             if len(self.balls) == 0:
                 self.server.send_to_all("GAMEOVER\n")
                 if self.playerl.points > self.playerr.points:
-                    self.server.send_to_all("WIN 1 \n")
+                    self.server.send_to_all("WIN 1\n")
                 else:
-                    self.server.send_to_all("WIN 2 \n")
+                    self.server.send_to_all("WIN 2\n")
                 break
 
             self.process_message()
