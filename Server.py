@@ -24,7 +24,7 @@ class ServerGame:
         self.timer = time.time()
 
         self.server = server
-        self.server.send_to_all("START")
+        self.server.send_to_all("START\n")
 
         self.stuffGroup = []
         count = 0

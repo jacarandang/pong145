@@ -60,6 +60,8 @@ class Main:
         self.selected = None
         self.limit = 60
 
+        self.has_gameover = False
+
     def wait(self):
         def ready():
             self.running = False
@@ -194,7 +196,8 @@ class Main:
             if msgs[0] == "GAMEOVER":
                 self.running = False
                 self.gameover = True
-                print "in process end"
+                self.has_gameover = True
+                self.display_gameover()
                 return
 
     #SETTER OF SELECTED
@@ -420,7 +423,8 @@ class Main:
         while(self.running):
             self.check_events()
             self.process_message()
-            print "back"
+            if self.gameover:
+                break
             self.clock.tick(60) #resource intensive but fixes bugged pong and slider
 
             self.screen.blit(self.bg, (0, 0))
@@ -466,9 +470,8 @@ class Main:
                     msg = self.client.wait_message()
                     if msg == "GAMEOVER":
                         self.gameover = True
-                        break
 
-        if len(self.balls) == 0 or self.gameover == True: self.display_gameover()
+        if len(self.balls) == 0 or self.gameover == True and not self.has_gameover: self.display_gameover()
 
 
     def display_gameover(self):

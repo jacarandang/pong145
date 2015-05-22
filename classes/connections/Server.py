@@ -46,12 +46,12 @@ class Server:
 		client, address = self.socket.accept()
 		print address, "as player1 connected"
 		self.player1 = client
-		self.player1.send("1")
+		self.player1.send("1\n")
 
 		client, address = self.socket.accept()
 		print address, "as player 2 connected"
 		self.player2 = client
-		self.player2.send("2")
+		self.player2.send("2\n")
 
 	def send_to_all(self, msg):
 		self.player1.send(msg)
